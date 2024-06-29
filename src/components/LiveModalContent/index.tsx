@@ -22,9 +22,20 @@ const LiveModalContent = () => {
           <Image src={addIcon} alt="add" width={20} height={20} />
           Add Destinations
         </div>
+
+        <div className="my-8">
+          <div className="text-md my-1 text-gray-600">Title</div>
+          <input
+            type="text"
+            className="w-full outline-none p-2 border-[1px] border-[#ddd]"
+          />
+          <div className="text-white bg-blue-600 hover:bg-blue-800 p-3 my-8 text-center rounded-lg cursor-pointer">
+            Create Live Stream
+          </div>
+        </div>
       </div>
       {showDestList && (
-        <div className="absolute bg-white p-3 z-10 shadow-2xl rounded-lg w-60">
+        <div className="absolute top-[250px] bg-white p-3 z-10 shadow-2xl rounded-lg w-60">
           <ul className="cursor-pointer">
             <li className="flex items-center gap-3 py-2 hover:bg-slate-100">
               <Image src={youtube} alt="Youtube" width={25} height={25} />
