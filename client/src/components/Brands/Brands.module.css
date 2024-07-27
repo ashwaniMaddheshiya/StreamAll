@@ -1,0 +1,41 @@
+.rectangle {
+  width: 100%;
+  padding: 4px;
+  background-color: #003781;
+  position: relative;
+  color: white;
+  font-size: 12px;
+  overflow: hidden;
+}
+.rectangle:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 45px 30px;
+  border-color: transparent transparent #ffffff transparent;
+}
+
+.circular {
+  width: 90%;
+  padding: 4px;
+  background-color: #003781;
+  color: white;
+  padding-left: 10px;
+  font-size: 12px;
+  border-radius: 20px;
+  margin: auto;
+}
+
+.block {
+  width: 90%;
+  padding: 4px;
+  background-color: #003781;
+  color: white;
+  padding-left: 10px;
+  font-size: 12px;
+  margin: auto;
+}
