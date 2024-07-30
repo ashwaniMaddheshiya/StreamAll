@@ -31,9 +31,16 @@ export const signUp = async (
       name,
     });
 
-    res
-      .status(201)
-      .json({ message: "User created successfully", data: newUser });
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!, {
+      expiresIn: "30d",
+    });
+
+    const createdUser = await User.findById(newUser._id).select("-password");
+
+    res.status(201).json({
+      message: "User created successfully",
+      data: { user: createdUser, token: token },
+    });
   } catch (error) {
     return next(error);
   }
@@ -52,7 +59,7 @@ export const signIn = async (
       return next(error);
     }
 
-    const user = await User.findOne({ email }).select("-password");
+    const user = await User.findOne({ email });
     if (!user) {
       const error = new HttpError("Invalid email", 500);
       return next(error);
@@ -65,12 +72,15 @@ export const signIn = async (
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
-      expiresIn: "1d",
+      expiresIn: "30d",
     });
 
-    res
-      .status(200)
-      .json({ message: "User signed in successfully", token, data:user });
+    const existingUser = await User.findOne({ email }).select("-password");
+
+    res.status(200).json({
+      message: "User signed in successfully",
+      data: { user: existingUser, token: token },
+    });
   } catch (error) {
     next(error);
   }

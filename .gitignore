@@ -6,6 +6,8 @@ server/node_modules/
 client/.env
 server/.env
 
+client/ .next/
+
 # Other common ignores
 .DS_Store
 *.log

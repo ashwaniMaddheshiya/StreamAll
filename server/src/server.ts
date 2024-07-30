@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import connectDB from "./db";
 import userRoutes from "./routes/userRoutes";
 import platformRoutes from "./routes/platformRoutes";
+import youtubeRoutes from "./routes/youtubeRoutes"
 import cors from "cors";
 
 const app: Express = express();
@@ -23,8 +24,9 @@ app.get("/", (req: Request, res: Response) => {
   res.status(200).send("Server is running");
 });
 
-app.use("/api/auth/v1", userRoutes);
+app.use("/api/auth", userRoutes);
 app.use("/api/platform", platformRoutes);
+app.use("/api/youtube",youtubeRoutes)
 
 const PORT: string | number = process.env.PORT || 8080;
 

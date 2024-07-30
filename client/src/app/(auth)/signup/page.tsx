@@ -2,9 +2,6 @@
 import React, { useState, FormEvent } from "react";
 import styles from "./page.module.css";
 import Image from "next/image";
-// import Carousel from "@/app/components/carousel";
-// import Verification from "../verification/page";
-// import { useAuthContext } from "@/context/auth";
 import Link from "next/link";
 import { SignUpFormSchema } from "@/types/signup";
 import { ZodError } from "zod";
@@ -12,15 +9,14 @@ import Visibility from "/public/icons/visibility.svg";
 import VisibilityOff from "/public/icons/visibilityOff.svg";
 import { myFetch } from "@/utils/myFetch";
 import { baseUrl } from "@/constants";
-// import logo from "/public/Logo_Light mode.png";
+import { useRouter } from "next/navigation";
+import bgImg from '/public/images/stream_auth.jpg'
 
 const SignUp = () => {
-  const [showVerification, setShowVerification] = useState(false);
-  //   const { signup } = useAuthContext();
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [mobileNo, setMobileNo] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisibility, setPasswordVisibility] = useState(false);
@@ -57,20 +53,24 @@ const SignUp = () => {
         setErrors({ name: "Please Enter Full Name" });
         return;
       }
-      if (mobileNo.length > 10 || mobileNo.startsWith("+")) {
-        setErrors({ mobileNo: "Enter 10 digit mobile number only" });
-        return;
-      }
       setIsLoading(true);
-      const response = await myFetch(`${baseUrl}/auth/signup`);
+      const { data, error } = await myFetch(`${baseUrl}/api/auth/signup`, {
+        method:'POST',
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
       setIsLoading(false);
-      console.log("Response", response);
-      // if (!response[0]?.error) {
-      //   generateOtp();
-      //   setShowVerification(true);
-      // } else {
-      //   setErrors({ email: response[0].error.message });
-      // }
+
+      if (data) {
+        console.log(data);
+        router.push("/");
+      }
+      if (error) {
+        console.log(error);
+      }
     } catch (error) {
       if (error instanceof ZodError) {
         const validationErrors: Record<string, string> = {};
@@ -86,25 +86,12 @@ const SignUp = () => {
     }
   };
 
-  const generateOtp = async () => {
-    const url = `${baseUrl}/auth/customer/verify/generate`;
-    const { data, error } = await myFetch(url, {
-      method: "POST",
-    });
-    if (data) console.log(data);
-    if (error) {
-      console.log(error);
-      return;
-    }
-  };
-  console.log(errors);
-  const obj = {
-    email: email,
-  };
   return (
     <div className={styles.container}>
       <div className={styles.sub_container}>
-        <div className={styles.sub_containerLeft}>{/* <Carousel /> */}</div>
+        <div className={styles.sub_containerLeft}>
+          {/* <Image src={bgImg} alt="" /> */}
+        </div>
         <form onSubmit={handleSignUp} className={styles.formContainer}>
           <div className={styles.form_container}>
             <div className={styles.form_heading}>
@@ -194,8 +181,6 @@ const SignUp = () => {
           </div>
         </form>
       </div>
-
-      {/* {showVerification && <Verification params={obj} />} */}
     </div>
   );
 };

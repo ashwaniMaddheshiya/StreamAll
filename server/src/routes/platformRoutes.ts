@@ -15,6 +15,6 @@ router.post("/create", createPlatform);
 
 router.get("/all", getPlatformList);
 
-router.post("/:platformId", getPlatformList);
+router.post("/:platformId", getPlatformDetail);
 
 export default router;

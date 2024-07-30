@@ -43,13 +43,35 @@ export const createPlatform = async (
   next: NextFunction
 ) => {
   try {
-    const { platform, userId, accessToken, refreshToken, scope, expiresAt,channelData } =
-      req.body;
+    const {
+      platform,
+      userId,
+      accessToken,
+      refreshToken,
+      scope,
+      expiresAt,
+      channelData,
+      linkedEmail,
+      emailVerified,
+    } = req.body;
 
     if (!platform || !userId || !accessToken || !refreshToken) {
       const error = new HttpError("Please send all data", 500);
-      console.log(error)
+      console.log(error);
       return next(error);
+    }
+
+    try {
+      const existingPlatform = await Platform.findOne({ linkedEmail });
+      if (existingPlatform) {
+        return res.status(200).json({
+          data: existingPlatform,
+          message: "Account Already Linked!",
+        });
+      }
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
     }
 
     const newPlatform = new Platform({
@@ -60,6 +82,8 @@ export const createPlatform = async (
       channelData,
       scope,
       expiresAt,
+      linkedEmail,
+      emailVerified,
     });
 
     // Save platform credentials
@@ -69,7 +93,7 @@ export const createPlatform = async (
       .status(201)
       .json({ data: newPlatform, message: "Platform Added Successfully" });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
@@ -78,7 +102,7 @@ export const getPlatformList = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { userId } = req.params;
+  const userId = "668da076d3522ae79f5b31bb";
 
   try {
     // This query will not execute immediately
@@ -99,7 +123,7 @@ export const getPlatformList = async (
     res.status(200).json({ message: "Platforms Found", data: platforms });
   } catch (error) {
     console.error("Error fetching user platforms:", error);
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Something went wrong" });
   }
 };
 

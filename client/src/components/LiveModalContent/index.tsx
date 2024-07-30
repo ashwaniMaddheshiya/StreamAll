@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { myFetch } from "@/utils/myFetch";
 import { baseUrl } from "@/constants";
+import { usePlatform } from "@/context/platforms";
+import { useRouter } from "next/navigation";
 
 const imageMap = {
   YouTube: youtube,
@@ -22,50 +24,22 @@ const LiveModalContent = () => {
   const [showDestList, setShowDestList] = useState(false);
   const [destList, setDestList] = useState<string[]>([]);
   const [platformData, setPlatformData] = useState([]);
+  const [title,setTitle] = useState("")
   const { data: session, status } = useSession();
+  const {platformList} = usePlatform()
+  const router = useRouter();
 
   const handleDestination = async (destination: string) => {
     // if (!destList.includes(destination)) {
     //   setDestList([...destList, destination]);
     // }
     // setShowDestList(false);
-
-    const dto = {
-      platform: "YouTube",
-      userId: "668da076d3522ae79f5b31bb",
-    };
-
-    const { error, data } = await myFetch(`${baseUrl}/api/platform/check`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dto),
-    });
-
-    if (data) {
-      if (data.function === "signIn") {
-        signIn("google");
-      } else {
-        setPlatformData(data);
-      }
-    }
-
-    if (error) {
-      console.log(error);
-    }
+    signIn('google')
   };
 
-
-  useEffect(() => {
-    console.log(session)
-    if (status === "authenticated") {
-      
-      console.log("User is signed in:", session);
-    } else if (status === "unauthenticated") {
-      console.log("User is not signed in.");
-    }
-  }, [status, session]);
+  const handleCreateLiveStream = () => {
+    router.push(`/create?title=${encodeURIComponent(title)}`);
+  };
 
   return (
     <div className="w-[40vw]">
@@ -73,17 +47,17 @@ const LiveModalContent = () => {
       <div className="mt-4 ">
         <div className="text-lg text-gray-600 mb-4">Select Destinations</div>
         <div className="flex gap-2 flex-wrap">
-          {destList.map((dest, index) => (
+          {platformList.map((platform, index) => (
             <div
-              className="relative flex w-fit border-[1px] border-blue-600 p-2 rounded-3xl text-blue-600 cursor-pointer hover:text-blue-700 hover:border-blue-700"
+              className="relative flex gap-2 w-fit border-[1px] border-[#6750a4] p-2 rounded-3xl text-[#6750a4] cursor-pointer"
               key={index}
             >
-              <Image src={imageMap[dest]} alt={dest} width={20} height={20} />
-              {dest}
+              <Image src={imageMap[platform.platform]} alt={platform.platform} width={20} height={20} />
+              {platform.platform}
             </div>
           ))}
           <div
-            className="relative flex w-fit border-[1px] border-blue-600 p-2 rounded-3xl text-blue-600 cursor-pointer hover:text-blue-700 hover:border-blue-700"
+            className="relative flex w-fit border-[1px] border-[#6750a4] p-2 rounded-3xl text-[#6750a4] cursor-pointer"
             onClick={() => setShowDestList(true)}
           >
             <Image src={addIcon} alt="add" width={20} height={20} />
@@ -96,10 +70,21 @@ const LiveModalContent = () => {
           <input
             type="text"
             className="w-full outline-none p-2 border-[1px] border-[#ddd]"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
-          <div className="text-white bg-blue-600 hover:bg-blue-800 p-3 my-8 text-center rounded-lg cursor-pointer">
+          {/* <div className="text-white bg-[#6750a4] hover:bg-[#564489] p-3 my-8 text-center rounded-lg cursor-pointer" onClick={handleCreateLiveStream}>
             Create Live Stream
-          </div>
+          </div> */}
+          <button
+            className={`w-full text-white p-2 my-8 text-center rounded-lg cursor-pointer ${
+              title ? 'bg-[#6750a4] hover:bg-[#564489]' : 'bg-gray-400 cursor-not-allowed'
+            }`}
+            onClick={handleCreateLiveStream}
+            disabled={!title}
+          >
+            Create Live Stream
+          </button>
         </div>
       </div>
       {showDestList && (

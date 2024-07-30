@@ -14,6 +14,7 @@ import VisibilityOff from "/public/icons/visibilityOff.svg";
 import { showToast } from "@/utils/showToast";
 import { myFetch } from "@/utils/myFetch";
 import { baseUrl } from "@/constants";
+import { useAuth } from "@/context/auth";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -21,6 +22,7 @@ const SignIn = () => {
   const [visible, setVisible] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [rememberMe, setRememberMe] = useState(false);
+  const { signin } = useAuth();
 
   useEffect(() => {
     const rememberedEmail = localStorage.getItem("rememberedEmail");
@@ -38,43 +40,34 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const signinHandler = async (event: any) => {
-    // event?.preventDefault();
-    // try {
-    //   SignInFormSchema.parse({ email, password });
-    //   setErrors({});
-    //   setIsLoading(true);
-    //   const response = await signin({ email, password });
-    //   console.log(response);
-    //   setIsLoading(false);
-    //   if (response[0]?.emailError) {
-    //     setErrors({ email: response[0]?.emailError });
-    //     return;
-    //   } else if (response[0]?.passwordError) {
-    //     setErrors({ password: response[0].passwordError });
-    //     return;
-    //   } else {
-    //     if (rememberMe) {
-    //       localStorage.setItem("rememberedEmail", email);
-    //     } else {
-    //       localStorage.removeItem("rememberedEmail");
-    //     }
-    //     if (id !== null) {
-    //       router.push(`/internal/trackers/${id}/trackedEvents`);
-    //     } else router.push("/internal");
-    //   }
-    // } catch (error) {
-    //   if (error instanceof ZodError) {
-    //     const validationErrors: Record<string, string> = {};
-    //     error.errors.forEach((err) => {
-    //       if (err.path) {
-    //         validationErrors[err.path.join(".")] = err.message;
-    //       }
-    //     });
-    //     setErrors(validationErrors);
-    //   } else {
-    //     console.error("An unexpected error occurred:", error);
-    //   }
-    // }
+    event?.preventDefault();
+    try {
+      SignInFormSchema.parse({ email, password });
+      setErrors({});
+      setIsLoading(true);
+      const { data, error } = await signin(email, password);
+
+      if (data) {
+        console.log(data);
+      }
+
+      if (error) {
+        console.log(error);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path) {
+            validationErrors[err.path.join(".")] = err.message;
+          }
+        });
+        setErrors(validationErrors);
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
   };
   const obj = {
     email: email,

@@ -1,13 +1,13 @@
 .container {
     min-height: 120vh;
     background-color: #fafaff;
-    width: 100vw;
+    /* width: 100vw; */
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    /* overflow-y: scroll;
+    overflow-x: hidden; */
   }
   
   .hero_container {

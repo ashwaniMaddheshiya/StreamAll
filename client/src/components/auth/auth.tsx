@@ -1,5 +1,6 @@
 import { baseUrl } from "@/constants";
 import { myFetch } from "@/utils/myFetch";
+import { showToast } from "@/utils/showToast";
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -54,6 +55,8 @@ export const authOptions: NextAuthOptions = {
                 userId: "668da076d3522ae79f5b31bb",
                 platform: "YouTube",
                 accessToken: account.access_token,
+                linkedEmail: profile?.email,
+                emailVerified: profile?.email_verified,
                 refreshToken: account.refresh_token,
                 channelData: youtubeData.items,
                 scope: account.scope,
@@ -68,17 +71,20 @@ export const authOptions: NextAuthOptions = {
               );
               return false;
             }
-
             const data = await response.json();
             console.log("Platform Data Saved:", data);
+
+            if(data.message === 'Account Already Linked!'){
+              showToast('error',data.message);
+              return false;
+            }
           } else {
             console.log("No YouTube channel data found.");
           }
-
           return true;
         } catch (error) {
           console.error("Error fetching or sending YouTube data:", error);
-          return false; // Optionally handle error case
+          return false;
         }
       }
       return true;
